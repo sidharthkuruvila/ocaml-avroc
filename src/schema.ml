@@ -88,8 +88,8 @@ let avro_schema_map_values =
 let avro_schema_array =
   foreign "avro_schema_array" (avro_schema_t @-> returning avro_schema_t)
 
-let avro_schema_array_values =
-  foreign "avro_schema_array_values" (avro_schema_t @-> returning avro_schema_t)
+let avro_schema_array_items =
+  foreign "avro_schema_array_items" (avro_schema_t @-> returning avro_schema_t)
 
 
 let avro_schema_union =
@@ -132,10 +132,11 @@ let avro_schema_from_json_literal schema_str schema =
   avro_schema_from_json_length
     schema_str (Unsigned.Size_t.of_int (String.length schema_str)) schema
 
-
+(*
+Not present in the dynamic libarary file
 let avro_schema_to_specific =
   foreign "avro_schema_to_specific"(avro_schema_t @-> string @-> returning int)
-
+ *)
 
 let avro_schema_get_subschema =
   foreign "avro_schema_get_subschema"

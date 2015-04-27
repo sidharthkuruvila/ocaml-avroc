@@ -1,3 +1,3 @@
-CURRENT_DIR=`pwd`
-LINKER_FLAGS=-cclib,-l,-cclib,avro.22.0.0,-cclib,-L,-cclib,${CURRENT_DIR}/lib
-ocamlbuild -r -I src -lflags $LINKER_FLAGS -pkg ctypes.foreign examples/quickstop.native
+
+#ocamlbuild -r -I src  -pkg ctypes.foreign examples/quickstop.native
+ocamlbuild -r -I src  -lflags -cclib,-lavro,-cclib,-L/usr/local/Cellar/avro-c/1.7.7/lib -pkg ctypes.foreign examples/quickstop.native
