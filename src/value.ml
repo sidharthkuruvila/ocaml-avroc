@@ -247,3 +247,27 @@ let avro_value_hash =
 let avro_value_to_json =
   foreign "avro_value_to_json"
     (ptr avro_value_t @-> int @-> ptr string @-> returning int)
+
+
+(* Helper functions*)
+let get_method value meth =
+  let iface  = (getf value avro_value_avro_value_iface_t) in
+  let self  = (getf value avro_value_self) in
+  let meth =  (getf !@iface  avro_value_iface_get_boolean) in
+  meth iface self
+
+let avro_value_iface_incref cls =
+  let meth = getf !@cls avro_value_iface_decref_iface in
+  meth cls
+
+let avro_value_iface_decref cls =
+  let meth = getf !@cls avro_value_iface_decref_iface in
+  meth cls
+
+       
+let avro_value_reset value =
+  get_method value avro_value_iface_reset
+
+let avro_value_get_boolean value out =
+  let meth = get_method value out in
+  meth 
