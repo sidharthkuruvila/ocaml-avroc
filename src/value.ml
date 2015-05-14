@@ -271,3 +271,89 @@ let avro_value_reset value =
 let avro_value_get_boolean value out =
   let meth = get_method value out in
   meth 
+(*
+
+#define avro_value_reset(value) \
+    avro_value_call0(value, reset, EINVAL)
+#define avro_value_get_type(value) \
+    avro_value_call0(value, get_type, (avro_type_t) -1)
+#define avro_value_get_schema(value) \
+    avro_value_call0(value, get_schema, NULL)
+
+#define avro_value_get_boolean(value, out) \
+    avro_value_call(value, get_boolean, EINVAL, out)
+#define avro_value_get_bytes(value, buf, size) \
+    avro_value_call(value, get_bytes, EINVAL, buf, size)
+#define avro_value_grab_bytes(value, dest) \
+    avro_value_call(value, grab_bytes, EINVAL, dest)
+#define avro_value_get_double(value, out) \
+    avro_value_call(value, get_double, EINVAL, out)
+#define avro_value_get_float(value, out) \
+    avro_value_call(value, get_float, EINVAL, out)
+#define avro_value_get_int(value, out) \
+    avro_value_call(value, get_int, EINVAL, out)
+#define avro_value_get_long(value, out) \
+    avro_value_call(value, get_long, EINVAL, out)
+#define avro_value_get_null(value) \
+    avro_value_call0(value, get_null, EINVAL)
+#define avro_value_get_string(value, str, size) \
+    avro_value_call(value, get_string, EINVAL, str, size)
+#define avro_value_grab_string(value, dest) \
+    avro_value_call(value, grab_string, EINVAL, dest)
+#define avro_value_get_enum(value, out) \
+    avro_value_call(value, get_enum, EINVAL, out)
+#define avro_value_get_fixed(value, buf, size) \
+    avro_value_call(value, get_fixed, EINVAL, buf, size)
+#define avro_value_grab_fixed(value, dest) \
+    avro_value_call(value, grab_fixed, EINVAL, dest)
+
+#define avro_value_set_boolean(value, val) \
+    avro_value_call(value, set_boolean, EINVAL, val)
+#define avro_value_set_bytes(value, buf, size) \
+    avro_value_call(value, set_bytes, EINVAL, buf, size)
+#define avro_value_give_bytes(value, buf) \
+    avro_value_call(value, give_bytes, EINVAL, buf)
+#define avro_value_set_double(value, val) \
+    avro_value_call(value, set_double, EINVAL, val)
+#define avro_value_set_float(value, val) \
+    avro_value_call(value, set_float, EINVAL, val)
+#define avro_value_set_int(value, val) \
+    avro_value_call(value, set_int, EINVAL, val)
+#define avro_value_set_long(value, val) \
+    avro_value_call(value, set_long, EINVAL, val)
+#define avro_value_set_null(value) \
+    avro_value_call0(value, set_null, EINVAL)
+#define avro_value_set_string(value, str) \
+    avro_value_call(value, set_string, EINVAL, str)
+#define avro_value_set_string_len(value, str, size) \
+    avro_value_call(value, set_string_len, EINVAL, str, size)
+#define avro_value_give_string_len(value, buf) \
+    avro_value_call(value, give_string_len, EINVAL, buf)
+#define avro_value_set_enum(value, val) \
+    avro_value_call(value, set_enum, EINVAL, val)
+#define avro_value_set_fixed(value, buf, size) \
+    avro_value_call(value, set_fixed, EINVAL, buf, size)
+#define avro_value_give_fixed(value, buf) \
+    avro_value_call(value, give_fixed, EINVAL, buf)
+
+#define avro_value_get_size(value, size) \
+    avro_value_call(value, get_size, EINVAL, size)
+#define avro_value_get_by_index(value, idx, child, name) \
+    avro_value_call(value, get_by_index, EINVAL, idx, child, name)
+#define avro_value_get_by_name(value, name, child, index) \
+    avro_value_call(value, get_by_name, EINVAL, name, child, index)
+#define avro_value_get_discriminant(value, out) \
+    avro_value_call(value, get_discriminant, EINVAL, out)
+#define avro_value_get_current_branch(value, branch) \
+    avro_value_call(value, get_current_branch, EINVAL, branch)
+
+#define avro_value_append(value, child, new_index) \
+    avro_value_call(value, append, EINVAL, child, new_index)
+#define avro_value_add(value, key, child, index, is_new) \
+    avro_value_call(value, add, EINVAL, key, child, index, is_new)
+#define avro_value_set_branch(value, discriminant, branch) \
+    avro_value_call(value, set_branch, EINVAL, discriminant, branch)
+ *)
+       
+
+       

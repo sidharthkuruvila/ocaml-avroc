@@ -2,6 +2,7 @@ open Ctypes
 open Io
 open Schema
 open Errors
+open Generic
 
        
 
@@ -26,6 +27,10 @@ let check_error msg error_no =
     end
 
 
+let add_person db string string string age =
+  ()
+    
+                          
 let main () =
   let person_schema_ptr = allocate avro_schema_t null in
   let db_ptr = allocate avro_file_writer_t null in
