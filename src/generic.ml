@@ -44,21 +44,33 @@ let avro_generic_string_class =
   foreign "avro_generic_string_class"
           (void @-> returning (ptr avro_value_iface_t))
 
+
+
+
+
+
+
+
 let avro_generic_boolean_new =
   foreign "avro_generic_boolean_new"
           (ptr avro_value_t @-> int @-> returning int)
 
+
+let avro_generic_bytes_new =
+  foreign "avro_generic_bytes_new"
+          ((ptr avro_value_t) @-> string @-> size_t @-> returning int)
+
 let avro_generic_double_new =
   foreign "avro_generic_double_new"
-          (ptr avro_value_t @-> double @-> size_t @->returning int)
+          (ptr avro_value_t @-> double @->returning int)
           
-let avro_generic_boolean_new =
-  foreign "avro_generic_boolean_new"
+let avro_generic_float_new =
+  foreign "avro_generic_float_new"
           (ptr avro_value_t @-> float @-> returning int)
-          
+
 let avro_generic_int_new =
   foreign "avro_generic_int_new"
-          (ptr avro_value_t @-> int @-> returning int)
+          (ptr avro_value_t @-> int32_t @-> returning int)
 
 let avro_generic_long_new =
   foreign "avro_generic_long_new"

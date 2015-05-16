@@ -10,6 +10,7 @@ type avro_value
 let avro_value : avro_value structure typ =
   structure "avro_value"
 let avro_value_t = avro_value
+
        
 (* Declaration of avro_value_iface struct*)
                                         
