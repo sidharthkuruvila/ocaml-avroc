@@ -7,5 +7,6 @@ function test(){
 
 #test test1
 test test_values
+rm -r _build
 
 

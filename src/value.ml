@@ -26,6 +26,7 @@ let avro_value_avro_value_iface_t =
 let avro_value_self =
   field avro_value "self" (ptr void)
                    
+let () = seal avro_value
 (*Definition of avro_value_iface fields*)
 
 let avro_value_iface_incref_iface
@@ -116,7 +117,7 @@ let avro_value_iface_grab_fixed =
 
 let avro_value_iface_set_boolean =
   field avro_value_iface "set_boolean"
-        (funptr (ptr avro_value_iface_t @-> ptr void @-> ptr int @-> returning int))
+        (funptr (ptr avro_value_iface_t @-> ptr void @-> int @-> returning int))
 
 let avro_value_iface_set_bytes =
   field avro_value_iface "set_bytes"
@@ -128,7 +129,7 @@ let avro_value_iface_give_bytes =
 
 let avro_value_iface_set_double =
   field avro_value_iface "set_double"
-        (funptr (ptr avro_value_iface_t @-> ptr void @-> ptr double @-> returning int))
+        (funptr (ptr avro_value_iface_t @-> ptr void @-> double @-> returning int))
 
 let avro_value_iface_set_float =
   field avro_value_iface "set_float"
@@ -202,6 +203,7 @@ let avro_value_iface_set_branch =
   field avro_value_iface "set_branch"
         (funptr (ptr avro_value_iface_t @-> ptr void @-> ptr int @-> ptr avro_value_t @-> returning int))
 
+let () = seal avro_value_iface
   
 let avro_value_incref =
   foreign "avro_value_incref" (ptr avro_value_t @-> returning void)
@@ -254,8 +256,8 @@ let avro_value_to_json =
 let get_method value meth =
   let iface  = (getf value avro_value_avro_value_iface_t) in
   let self  = (getf value avro_value_self) in
-  let meth =  (getf !@iface  avro_value_iface_get_boolean) in
-  meth iface self
+  let m =  (getf !@iface  meth) in
+  m iface self
 
 let avro_value_iface_incref cls =
   let meth = getf !@cls avro_value_iface_decref_iface in
@@ -270,8 +272,7 @@ let avro_value_reset value =
   get_method value avro_value_iface_reset
 
 let avro_value_get_boolean value out =
-  let meth = get_method value out in
-  meth 
+  get_method value avro_value_iface_get_boolean out 
 (*
 
 #define avro_value_reset(value) \
@@ -287,8 +288,16 @@ let avro_value_get_boolean value out =
     avro_value_call(value, get_bytes, EINVAL, buf, size)
 #define avro_value_grab_bytes(value, dest) \
     avro_value_call(value, grab_bytes, EINVAL, dest)
+  *)
+(*
 #define avro_value_get_double(value, out) \
     avro_value_call(value, get_double, EINVAL, out)
+*)
+
+let avro_value_get_double value out = 
+  get_method value avro_value_iface_get_double out
+
+(*
 #define avro_value_get_float(value, out) \
     avro_value_call(value, get_float, EINVAL, out)
 #define avro_value_get_int(value, out) \
@@ -307,15 +316,25 @@ let avro_value_get_boolean value out =
     avro_value_call(value, get_fixed, EINVAL, buf, size)
 #define avro_value_grab_fixed(value, dest) \
     avro_value_call(value, grab_fixed, EINVAL, dest)
-
-#define avro_value_set_boolean(value, val) \
-    avro_value_call(value, set_boolean, EINVAL, val)
+*)
+(*#define avro_value_set_boolean(value, val) \
+     avro_value_call(value, set_boolean, EINVAL, val)*)
+let avro_value_set_boolean value out =
+  get_method value avro_value_iface_set_boolean out
+(*
 #define avro_value_set_bytes(value, buf, size) \
     avro_value_call(value, set_bytes, EINVAL, buf, size)
 #define avro_value_give_bytes(value, buf) \
     avro_value_call(value, give_bytes, EINVAL, buf)
+*)
+
+(*
 #define avro_value_set_double(value, val) \
     avro_value_call(value, set_double, EINVAL, val)
+*)
+let avro_value_set_double value out =
+  get_method value avro_value_iface_set_double out
+    (*
 #define avro_value_set_float(value, val) \
     avro_value_call(value, set_float, EINVAL, val)
 #define avro_value_set_int(value, val) \
