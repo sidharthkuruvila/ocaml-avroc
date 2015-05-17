@@ -133,15 +133,15 @@ let avro_value_iface_set_double =
 
 let avro_value_iface_set_float =
   field avro_value_iface "set_float"
-        (funptr (ptr avro_value_iface_t @-> ptr void @-> ptr float @-> returning int))
+        (funptr (ptr avro_value_iface_t @-> ptr void @-> float @-> returning int))
 
 let avro_value_iface_set_int =
   field avro_value_iface "set_int"
-        (funptr (ptr avro_value_iface_t @-> ptr void @-> ptr int32_t @-> returning int))
+        (funptr (ptr avro_value_iface_t @-> ptr void @-> int32_t @-> returning int))
 
 let avro_value_iface_set_long =
   field avro_value_iface "set_long"
-        (funptr (ptr avro_value_iface_t @-> ptr void @-> ptr int64_t @-> returning int))
+        (funptr (ptr avro_value_iface_t @-> ptr void @-> int64_t @-> returning int))
 
 let avro_value_iface_set_null =
   field avro_value_iface "set_null"
@@ -300,10 +300,25 @@ let avro_value_get_double value out =
 (*
 #define avro_value_get_float(value, out) \
     avro_value_call(value, get_float, EINVAL, out)
+  *)
+let avro_value_get_float value out = 
+  get_method value avro_value_iface_get_float out
+
+(*
 #define avro_value_get_int(value, out) \
     avro_value_call(value, get_int, EINVAL, out)
+*)
+let avro_value_get_int value out = 
+  get_method value avro_value_iface_get_int out
+
+(*
 #define avro_value_get_long(value, out) \
     avro_value_call(value, get_long, EINVAL, out)
+  *)
+let avro_value_get_long value out = 
+  get_method value avro_value_iface_get_long out
+
+(*
 #define avro_value_get_null(value) \
     avro_value_call0(value, get_null, EINVAL)
 #define avro_value_get_string(value, str, size) \
@@ -337,10 +352,22 @@ let avro_value_set_double value out =
     (*
 #define avro_value_set_float(value, val) \
     avro_value_call(value, set_float, EINVAL, val)
+  *)
+let avro_value_set_float value out =
+  get_method value avro_value_iface_set_float out
+(*
 #define avro_value_set_int(value, val) \
     avro_value_call(value, set_int, EINVAL, val)
+*)
+let avro_value_set_int value out =
+  get_method value avro_value_iface_set_int out
+(*
 #define avro_value_set_long(value, val) \
     avro_value_call(value, set_long, EINVAL, val)
+  *)
+let avro_value_set_long value out =
+  get_method value avro_value_iface_set_long out
+(*
 #define avro_value_set_null(value) \
     avro_value_call0(value, set_null, EINVAL)
 #define avro_value_set_string(value, str) \
