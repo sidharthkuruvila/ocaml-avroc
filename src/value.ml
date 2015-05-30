@@ -153,7 +153,7 @@ let avro_value_iface_set_string =
 
 let avro_value_iface_set_string_len =
   field avro_value_iface "set_string_len"
-        (funptr (ptr avro_value_iface_t @-> ptr void @-> string @-> ptr size_t @-> returning int))
+        (funptr (ptr avro_value_iface_t @-> ptr void @-> string @-> size_t @-> returning int))
 
 let avro_value_iface_give_string_len =
   field avro_value_iface "give_string_len"
@@ -161,7 +161,7 @@ let avro_value_iface_give_string_len =
 
 let avro_value_iface_set_enum =
   field avro_value_iface "set_enum"
-        (funptr (ptr avro_value_iface_t @-> ptr void @-> ptr int @-> returning int))
+        (funptr (ptr avro_value_iface_t @-> ptr void @-> int @-> returning int))
 
 let avro_value_iface_set_fixed =
   field avro_value_iface "set_fixed"
@@ -332,10 +332,14 @@ let avro_value_get_string value out size =
 
 (*
 #define avro_value_grab_string(value, dest) \
-    avro_value_call(value, grab_string, EINVAL, dest)
-#define avro_value_get_enum(value, out) \
-    avro_value_call(value, get_enum, EINVAL, out)
-#define avro_value_get_fixed(value, buf, size) \
+    avro_value_call(value, grab_string, EINVAL, dest) *)
+
+(*#define avro_value_get_enum(value, out) \
+     avro_value_call(value, get_enum, EINVAL, out)*)
+let avro_value_get_enum value out = 
+  get_method value avro_value_iface_get_enum out
+
+(*#define avro_value_get_fixed(value, buf, size) \
     avro_value_call(value, get_fixed, EINVAL, buf, size)
 #define avro_value_grab_fixed(value, dest) \
     avro_value_call(value, grab_fixed, EINVAL, dest)
@@ -381,14 +385,23 @@ let avro_value_set_long value out =
 *)
 (*#define avro_value_set_string(value, str) \
     avro_value_call(value, set_string, EINVAL, str)*)
+let avro_value_set_string value out =
+  get_method value avro_value_iface_set_string out
 (*
 #define avro_value_set_string_len(value, str, size) \
-    avro_value_call(value, set_string_len, EINVAL, str, size)
-#define avro_value_give_string_len(value, buf) \
-    avro_value_call(value, give_string_len, EINVAL, buf)
-#define avro_value_set_enum(value, val) \
-    avro_value_call(value, set_enum, EINVAL, val)
-#define avro_value_set_fixed(value, buf, size) \
+    avro_value_call(value, set_string_len, EINVAL, str, size) *)
+let avro_value_set_string_len value out size =
+  get_method value avro_value_iface_set_string_len out size
+(* #define avro_value_give_string_len(value, buf) \
+    avro_value_call(value, give_string_len, EINVAL, buf) *)
+
+(*#define avro_value_set_enum(value, val) \
+    avro_value_call(value, set_enum, EINVAL, val)*)
+let avro_value_set_enum value out =
+  get_method value avro_value_iface_set_enum out
+
+
+(*#define avro_value_set_fixed(value, buf, size) \
     avro_value_call(value, set_fixed, EINVAL, buf, size)
 #define avro_value_give_fixed(value, buf) \
     avro_value_call(value, give_fixed, EINVAL, buf)

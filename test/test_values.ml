@@ -5,6 +5,7 @@ open Errors
 open Ctypes
 open Foreign
 open Unsigned
+open Schema
 
 
 let check_error msg error_no =
@@ -101,6 +102,8 @@ let test_null test_ctxt =
 let test_string test_ctxt = 
     let original = "This is a test string" in
     let updated = "This is a replacement string" in
+    let short_text = "" in
+    let smaller_text_len = 10 in
     let string_ptr = allocate string "" in 
     let byte_ptr_ptr = allocate_n (ptr char) ~count:1 in
     let size_t_ptr = allocate_n size_t ~count:1 in
@@ -110,6 +113,37 @@ let test_string test_ctxt =
     (* Avro includes the trailing 0 in it's size check so we discount that *)
     let result_str = string_from_ptr !@byte_ptr_ptr ((Size_t.to_int !@size_t_ptr) - 1) in
     assert_equal original result_str;
+    check_error "Failed to set string" (avro_value_set_string !@value_ptr updated);
+    check_error "Failed to fetch string" (avro_value_get_string !@value_ptr byte_ptr_ptr size_t_ptr);
+    let result_str = string_from_ptr !@byte_ptr_ptr ((Size_t.to_int !@size_t_ptr) - 1) in
+    assert_equal updated result_str;
+    check_error "Failed to set string" (avro_value_set_string_len!@value_ptr updated (Size_t.of_int smaller_text_len));
+    check_error "Failed to fetch string" (avro_value_get_string !@value_ptr byte_ptr_ptr size_t_ptr);
+    let result_str = string_from_ptr !@byte_ptr_ptr (Size_t.to_int !@size_t_ptr) in
+    assert_equal "This is a " result_str;
+    avro_value_decref value_ptr
+
+let test_enum test_ctxt = 
+    let enum_schema_ptr = allocate avro_schema_t null in
+    let schema_str = "{" ^
+      "\"type\": \"enum\"," ^
+      "\"name\": \"suits\"," ^
+      "\"symbols\": [\"CLUBS\",\"DIAMONDS\",\"HEARTS\",\"SPADES\"]"  ^
+    "}" in
+    check_error "Failed to read avro schema" (avro_schema_from_json_literal schema_str enum_schema_ptr);
+    let enum_class = avro_generic_class_from_schema !@enum_schema_ptr in 
+    let value_ptr = allocate_n avro_value ~count:1 in
+    check_error "Failed to create string" (avro_generic_value_new enum_class value_ptr);
+    let updated = 2 in
+    let number_ptr = allocate int 0 in
+    check_error "Failed to fetch int" (avro_value_get_enum !@value_ptr number_ptr);
+    assert_equal 0 !@number_ptr;
+    check_error "Failed to reset int" (avro_value_reset !@value_ptr);
+    check_error "Failed to fetch int" (avro_value_get_enum !@value_ptr number_ptr);
+    assert_equal 0 !@number_ptr;
+    check_error "Failed to set int"  (avro_value_set_enum !@value_ptr updated);
+    check_error "Failed to fetch int" (avro_value_get_enum !@value_ptr number_ptr);
+    assert_equal updated !@number_ptr;
     avro_value_decref value_ptr
 
 let suit = "First Test" >:::
@@ -119,7 +153,8 @@ let suit = "First Test" >:::
   "test_float" >:: test_float;
   "test_int" >:: test_int;
   "test_long" >:: test_long;
-  "test_string" >:: test_string
+  "test_string" >:: test_string;
+  "test_enum" >:: test_enum
 ]
 
 let _ = run_test_tt_main suit
