@@ -95,7 +95,7 @@ let avro_value_iface_get_null =
 
 let avro_value_iface_get_string =
   field avro_value_iface "get_string"
-        (funptr (ptr avro_value_iface_t @-> ptr void @-> ptr string @-> ptr size_t @-> returning int))
+        (funptr (ptr avro_value_iface_t @-> ptr void @-> ptr (ptr char) @-> ptr size_t @-> returning int))
         
 let avro_value_iface_grab_string =
   field avro_value_iface "grab_string"
@@ -121,7 +121,7 @@ let avro_value_iface_set_boolean =
 
 let avro_value_iface_set_bytes =
   field avro_value_iface "set_bytes"
-        (funptr (ptr avro_value_iface_t @-> ptr void @-> ptr void @-> ptr size_t @-> returning int))
+        (funptr (ptr avro_value_iface_t @-> ptr void @-> ptr void @-> size_t @-> returning int))
 
 let avro_value_iface_give_bytes =
   field avro_value_iface "give_bytes"
@@ -321,8 +321,16 @@ let avro_value_get_long value out =
 (*
 #define avro_value_get_null(value) \
     avro_value_call0(value, get_null, EINVAL)
+  *)
+(*
 #define avro_value_get_string(value, str, size) \
     avro_value_call(value, get_string, EINVAL, str, size)
+*)
+let avro_value_get_string value out size = 
+  get_method value avro_value_iface_get_string out size
+
+
+(*
 #define avro_value_grab_string(value, dest) \
     avro_value_call(value, grab_string, EINVAL, dest)
 #define avro_value_get_enum(value, out) \
@@ -370,8 +378,10 @@ let avro_value_set_long value out =
 (*
 #define avro_value_set_null(value) \
     avro_value_call0(value, set_null, EINVAL)
-#define avro_value_set_string(value, str) \
-    avro_value_call(value, set_string, EINVAL, str)
+*)
+(*#define avro_value_set_string(value, str) \
+    avro_value_call(value, set_string, EINVAL, str)*)
+(*
 #define avro_value_set_string_len(value, str, size) \
     avro_value_call(value, set_string_len, EINVAL, str, size)
 #define avro_value_give_string_len(value, buf) \

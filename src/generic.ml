@@ -86,4 +86,4 @@ let avro_generic_string_new =
 
 let avro_generic_string_new_length =
   foreign "avro_generic_string_new_length"
-          (ptr avro_value_t @-> string @-> size_t @-> returning int)
+          (ptr avro_value_t @-> ptr char @-> size_t @-> returning int)

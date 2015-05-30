@@ -4,6 +4,7 @@ open Value
 open Errors
 open Ctypes
 open Foreign
+open Unsigned
 
 
 let check_error msg error_no =
@@ -93,13 +94,32 @@ let test_long test_ctxt =
     assert_equal updated !@number_ptr;
     avro_value_decref value_ptr
 
+let test_null test_ctxt =
+    (*Leaving unimplemented for now need to figure out what to test*)
+    assert_equal true true
+
+let test_string test_ctxt = 
+    let original = "This is a test string" in
+    let updated = "This is a replacement string" in
+    let string_ptr = allocate string "" in 
+    let byte_ptr_ptr = allocate_n (ptr char) ~count:1 in
+    let size_t_ptr = allocate_n size_t ~count:1 in
+    let value_ptr = allocate_n avro_value ~count:1 in
+    check_error "Failed to create string" (avro_generic_string_new value_ptr original);
+    check_error "Failed to fetch string" (avro_value_get_string !@value_ptr byte_ptr_ptr size_t_ptr);
+    (* Avro includes the trailing 0 in it's size check so we discount that *)
+    let result_str = string_from_ptr !@byte_ptr_ptr ((Size_t.to_int !@size_t_ptr) - 1) in
+    assert_equal original result_str;
+    avro_value_decref value_ptr
+
 let suit = "First Test" >:::
 [
   "test_boolean" >:: test_boolean;
   "test_double" >:: test_double;
   "test_float" >:: test_float;
   "test_int" >:: test_int;
-  "test_long" >:: test_long
+  "test_long" >:: test_long;
+  "test_string" >:: test_string
 ]
 
 let _ = run_test_tt_main suit
