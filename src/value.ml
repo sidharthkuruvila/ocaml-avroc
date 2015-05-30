@@ -404,11 +404,13 @@ let avro_value_set_enum value out =
 (*#define avro_value_set_fixed(value, buf, size) \
     avro_value_call(value, set_fixed, EINVAL, buf, size)
 #define avro_value_give_fixed(value, buf) \
-    avro_value_call(value, give_fixed, EINVAL, buf)
+    avro_value_call(value, give_fixed, EINVAL, buf)*)
 
-#define avro_value_get_size(value, size) \
-    avro_value_call(value, get_size, EINVAL, size)
-#define avro_value_get_by_index(value, idx, child, name) \
+(*#define avro_value_get_size(value, size) \
+    avro_value_call(value, get_size, EINVAL, size)*)
+let avro_value_get_size value out =
+  get_method value avro_value_iface_get_size out
+(*#define avro_value_get_by_index(value, idx, child, name) \
     avro_value_call(value, get_by_index, EINVAL, idx, child, name)
 #define avro_value_get_by_name(value, name, child, index) \
     avro_value_call(value, get_by_name, EINVAL, name, child, index)
@@ -416,9 +418,12 @@ let avro_value_set_enum value out =
     avro_value_call(value, get_discriminant, EINVAL, out)
 #define avro_value_get_current_branch(value, branch) \
     avro_value_call(value, get_current_branch, EINVAL, branch)
-
-#define avro_value_append(value, child, new_index) \
-    avro_value_call(value, append, EINVAL, child, new_index)
+*)
+(*#define avro_value_append(value, child, new_index) \
+    avro_value_call(value, append, EINVAL, child, new_index)*)
+let avro_value_append value child new_index =
+  get_method value avro_value_iface_append child new_index
+    (*
 #define avro_value_add(value, key, child, index, is_new) \
     avro_value_call(value, add, EINVAL, key, child, index, is_new)
 #define avro_value_set_branch(value, discriminant, branch) \

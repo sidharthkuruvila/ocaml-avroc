@@ -123,6 +123,27 @@ let test_string test_ctxt =
     assert_equal "This is a " result_str;
     avro_value_decref value_ptr
 
+let test_array test_ctxt = 
+    let double_schema = avro_schema_double () in
+    let array_schema = avro_schema_array double_schema in
+    let array_class = avro_generic_class_from_schema array_schema in
+    let array_value_ptr = allocate_n avro_value ~count:1 in
+    check_error "Failed to create array" (avro_generic_value_new array_class array_value_ptr);
+    let element = allocate_n avro_value ~count:1 in
+    let new_index = allocate_n size_t ~count:1 in
+    check_error "Failed to add element" (avro_value_append !@array_value_ptr element new_index);
+    check_error "Failed to add element" (avro_value_append !@array_value_ptr element new_index);
+    check_error "Failed to set double" (avro_value_set_double !@element 3.0);
+    assert_equal 1 (Size_t.to_int !@new_index);
+    let size_t_ptr = allocate_n size_t ~count:1 in
+    check_error "Failed to get size of array" (avro_value_get_size !@array_value_ptr size_t_ptr);
+    assert_equal 2 (Size_t.to_int !@size_t_ptr);
+    check_error "Failed to get element" (avro_value_get_by_index !@array_value_ptr (Size_t.of_int 1) element);
+    ignore (avro_schema_decref double_schema);
+    ignore (avro_schema_decref array_schema);
+    avro_value_iface_decref array_class;
+    Core.Std.printf "hello"
+
 let test_enum test_ctxt = 
     let enum_schema_ptr = allocate avro_schema_t null in
     let schema_str = "{" ^
@@ -154,7 +175,9 @@ let suit = "First Test" >:::
   "test_int" >:: test_int;
   "test_long" >:: test_long;
   "test_string" >:: test_string;
+  "test_array" >:: test_array;
   "test_enum" >:: test_enum
+  
 ]
 
 let _ = run_test_tt_main suit

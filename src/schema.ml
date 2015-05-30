@@ -155,6 +155,13 @@ let avro_schema_equal =
   foreign "avro_schema_equal"
           (avro_schema_t @-> avro_schema_t @-> returning int)
 
+let avro_schema_incref = 
+  foreign "avro_schema_incref"
+          (avro_schema_t @-> returning avro_schema_t)
+          
+let avro_schema_decref = 
+  foreign "avro_schema_decref"
+          (avro_schema_t @-> returning int)
 
 let avro_schema_match =
   foreign "avro_schema_match"
