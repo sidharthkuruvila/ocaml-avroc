@@ -107,7 +107,7 @@ let avro_value_iface_get_enum =
 
 let avro_value_iface_get_fixed =
   field avro_value_iface "get_fixed"
-        (funptr (ptr avro_value_iface_t @-> ptr void @-> ptr string @-> ptr size_t @-> returning int))
+        (funptr (ptr avro_value_iface_t @-> ptr void @-> ptr (ptr void) @-> ptr size_t @-> returning int))
 
 let avro_value_iface_grab_fixed =
   field avro_value_iface "grab_fixed"
@@ -165,7 +165,7 @@ let avro_value_iface_set_enum =
 
 let avro_value_iface_set_fixed =
   field avro_value_iface "set_fixed"
-        (funptr (ptr avro_value_iface_t @-> ptr void @-> ptr void @-> ptr size_t @-> returning int))
+        (funptr (ptr avro_value_iface_t @-> ptr void @-> ptr void @-> size_t @-> returning int))
 
 let avro_value_iface_give_fixed =
   field avro_value_iface "give_fixed"
@@ -177,7 +177,7 @@ let avro_value_iface_get_size =
 
 let avro_value_iface_get_by_index =
   field avro_value_iface "get_by_index"
-        (funptr (ptr avro_value_iface_t @-> ptr void @-> ptr size_t @-> ptr avro_value_t @-> ptr string @-> returning int))
+        (funptr (ptr avro_value_iface_t @-> ptr void @-> size_t @-> ptr avro_value_t @-> ptr string @-> returning int))
 
 let avro_value_iface_get_by_name =
   field avro_value_iface "get_by_name"
@@ -340,8 +340,11 @@ let avro_value_get_enum value out =
   get_method value avro_value_iface_get_enum out
 
 (*#define avro_value_get_fixed(value, buf, size) \
-    avro_value_call(value, get_fixed, EINVAL, buf, size)
-#define avro_value_grab_fixed(value, dest) \
+    avro_value_call(value, get_fixed, EINVAL, buf, size) *)
+let avro_value_get_fixed value buf size = 
+  get_method value avro_value_iface_get_fixed buf size
+
+(*#define avro_value_grab_fixed(value, dest) \
     avro_value_call(value, grab_fixed, EINVAL, dest)
 *)
 (*#define avro_value_set_boolean(value, val) \
@@ -402,7 +405,12 @@ let avro_value_set_enum value out =
 
 
 (*#define avro_value_set_fixed(value, buf, size) \
-    avro_value_call(value, set_fixed, EINVAL, buf, size)
+    avro_value_call(value, set_fixed, EINVAL, buf, size)*)
+
+let  avro_value_set_fixed value buf size = 
+  get_method value avro_value_iface_set_fixed buf size
+
+(*
 #define avro_value_give_fixed(value, buf) \
     avro_value_call(value, give_fixed, EINVAL, buf)*)
 
@@ -410,9 +418,14 @@ let avro_value_set_enum value out =
     avro_value_call(value, get_size, EINVAL, size)*)
 let avro_value_get_size value out =
   get_method value avro_value_iface_get_size out
+
 (*#define avro_value_get_by_index(value, idx, child, name) \
-    avro_value_call(value, get_by_index, EINVAL, idx, child, name)
-#define avro_value_get_by_name(value, name, child, index) \
+    avro_value_call(value, get_by_index, EINVAL, idx, child, name) *)
+
+let avro_value_get_by_index value idx child name =
+  get_method value avro_value_iface_get_by_index idx child name
+
+(*#define avro_value_get_by_name(value, name, child, index) \
     avro_value_call(value, get_by_name, EINVAL, name, child, index)
 #define avro_value_get_discriminant(value, out) \
     avro_value_call(value, get_discriminant, EINVAL, out)

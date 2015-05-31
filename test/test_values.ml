@@ -138,7 +138,7 @@ let test_array test_ctxt =
     let size_t_ptr = allocate_n size_t ~count:1 in
     check_error "Failed to get size of array" (avro_value_get_size !@array_value_ptr size_t_ptr);
     assert_equal 2 (Size_t.to_int !@size_t_ptr);
-    check_error "Failed to get element" (avro_value_get_by_index !@array_value_ptr (Size_t.of_int 1) element);
+    check_error "Failed to get element" (avro_value_get_by_index !@array_value_ptr (Size_t.of_int 1) element (from_voidp string null));
     ignore (avro_schema_decref double_schema);
     ignore (avro_schema_decref array_schema);
     avro_value_iface_decref array_class;
@@ -167,6 +167,30 @@ let test_enum test_ctxt =
     assert_equal updated !@number_ptr;
     avro_value_decref value_ptr
 
+let test_fixed _ = 
+    let fixed_schema_ptr = allocate avro_schema_t null in
+    let schema_str = "{" ^
+    "  \"type\": \"fixed\"," ^
+    "  \"name\": \"ipv4\"," ^
+    "  \"size\": 4" ^
+    "}" in 
+    check_error "Failed to read avro schema" (avro_schema_from_json_literal schema_str fixed_schema_ptr);
+    let fixed_class = avro_generic_class_from_schema !@fixed_schema_ptr in 
+    let value_ptr = allocate_n avro_value ~count:1 in
+    check_error "Failed to create fixed" (avro_generic_value_new fixed_class value_ptr);
+    let updated = allocate_n char ~count:4 in
+    (updated +@ 0) <-@ 'a';
+    (updated +@ 1) <-@ 'b';
+    (updated +@ 2) <-@ 'c';
+    (updated +@ 3) <-@ 'd';
+    check_error "Failed to set fixed" (avro_value_set_fixed !@value_ptr (to_voidp updated) (Size_t.of_int 4));
+    let result = allocate_n (ptr void) ~count:1 in
+    let size_t_ptr = allocate_n size_t ~count:1 in 
+    check_error "Failed to set fixed" (avro_value_get_fixed !@value_ptr result size_t_ptr);
+    assert_equal 4 (Size_t.to_int !@size_t_ptr);
+    avro_value_decref value_ptr
+
+
 let suit = "First Test" >:::
 [
   "test_boolean" >:: test_boolean;
@@ -176,7 +200,8 @@ let suit = "First Test" >:::
   "test_long" >:: test_long;
   "test_string" >:: test_string;
   "test_array" >:: test_array;
-  "test_enum" >:: test_enum
+  "test_enum" >:: test_enum;
+  "test_fixed" >:: test_fixed
   
 ]
 
