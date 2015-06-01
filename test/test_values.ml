@@ -189,7 +189,7 @@ let test_fixed _ =
     assert_equal 4 (Size_t.to_int !@size_t_ptr);
     avro_value_decref value_ptr
 
-let test_map = 
+let test_map _ = 
     let double_schema = avro_schema_double () in
     let map_schema = avro_schema_map double_schema in
     let map_class = avro_generic_class_from_schema map_schema in
@@ -219,7 +219,8 @@ let suit = "First Test" >:::
   "test_string" >:: test_string;
   "test_array" >:: test_array;
   "test_enum" >:: test_enum;
-  "test_fixed" >:: test_fixed
+  "test_fixed" >:: test_fixed;
+  "test_map" >:: test_map
 ]
 
 let _ = run_test_tt_main suit
