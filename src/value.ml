@@ -436,10 +436,14 @@ let avro_value_get_by_index value idx child name =
     avro_value_call(value, append, EINVAL, child, new_index)*)
 let avro_value_append value child new_index =
   get_method value avro_value_iface_append child new_index
-    (*
-#define avro_value_add(value, key, child, index, is_new) \
+
+(*#define avro_value_add(value, key, child, index, is_new) \
     avro_value_call(value, add, EINVAL, key, child, index, is_new)
-#define avro_value_set_branch(value, discriminant, branch) \
+  *)
+let avro_value_add value key child index is_new = 
+  get_method value avro_value_iface_add key child index is_new
+
+(*#define avro_value_set_branch(value, discriminant, branch) \
     avro_value_call(value, set_branch, EINVAL, discriminant, branch)
  *)
        

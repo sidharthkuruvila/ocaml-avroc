@@ -141,8 +141,7 @@ let test_array test_ctxt =
     check_error "Failed to get element" (avro_value_get_by_index !@array_value_ptr (Size_t.of_int 1) element (from_voidp string null));
     ignore (avro_schema_decref double_schema);
     ignore (avro_schema_decref array_schema);
-    avro_value_iface_decref array_class;
-    Core.Std.printf "hello"
+    avro_value_iface_decref array_class
 
 let test_enum test_ctxt = 
     let enum_schema_ptr = allocate avro_schema_t null in
@@ -190,6 +189,25 @@ let test_fixed _ =
     assert_equal 4 (Size_t.to_int !@size_t_ptr);
     avro_value_decref value_ptr
 
+let test_map = 
+    let double_schema = avro_schema_double () in
+    let map_schema = avro_schema_map double_schema in
+    let map_class = avro_generic_class_from_schema map_schema in
+    let map_value_ptr = allocate_n avro_value ~count:1 in
+    check_error "Failed to create array" (avro_generic_value_new map_class map_value_ptr);
+    let element = allocate_n avro_value ~count:1 in
+    let new_index = allocate_n size_t ~count:1 in
+    let is_new = allocate_n int ~count:1 in
+    check_error "Failed to add element" (avro_value_add !@map_value_ptr "key1" element new_index is_new);
+    assert_equal 1 !@is_new;
+    check_error "Failed to add element" (avro_value_add !@map_value_ptr "key1" element new_index is_new);
+    assert_equal 0 !@is_new;
+    check_error "Failed to set double" (avro_value_set_double !@element 3.0);
+    assert_equal 0 (Size_t.to_int !@new_index);
+    check_error "Failed to get element" (avro_value_get_by_index !@map_value_ptr (Size_t.of_int 0) element (from_voidp string null));
+    let size_t_ptr = allocate_n size_t ~count:1 in
+    avro_value_iface_decref map_class  
+
 
 let suit = "First Test" >:::
 [
@@ -202,7 +220,6 @@ let suit = "First Test" >:::
   "test_array" >:: test_array;
   "test_enum" >:: test_enum;
   "test_fixed" >:: test_fixed
-  
 ]
 
 let _ = run_test_tt_main suit
