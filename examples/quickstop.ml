@@ -6,24 +6,7 @@ open Generic
 open Value
 open Unsigned
 open Core
-       
-
-let check_error msg error_no =
-  if error_no != 0 then begin
-      prerr_endline msg;
-      prerr_endline ("Error message: " ^ avro_strerror ());
-      exit 1
-    end
-
-let get_field record index = 
-  let field_ptr = allocate_n avro_value ~count:1 in
-  let err = (avro_value_get_by_index record (Size_t.of_int index) field_ptr (from_voidp string null)) in
-  check_error "Failed to get field" err;
-  !@field_ptr
-
-let set_string value str = 
-  let err = avro_value_set_string value str in
-  check_error "Failed to get field" err
+open Simple
 
 
 let person_schema_str =
@@ -58,32 +41,21 @@ let add_person db person_schema first last number age =
   let record_class = avro_generic_class_from_schema person_schema in 
   let value_ptr = allocate_n avro_value ~count:1 in
   check_error "Failed to create fixed" (avro_generic_value_new record_class value_ptr);
-  let field_ptr = allocate_n avro_value ~count:1 in
-  check_error "Failed to get field" (avro_value_get_by_index !@value_ptr (Size_t.of_int 0) field_ptr (from_voidp string null));
-  check_error "Failed to set string" (avro_value_set_long !@field_ptr (Int64.of_int 17));
-  set_string (get_field !@value_ptr 1) first;
-  set_string (get_field !@value_ptr 1) last;
-  set_string (get_field !@value_ptr 1) number;
-  check_error "Failed to get field" (avro_value_get_by_index !@value_ptr (Size_t.of_int 4) field_ptr (from_voidp string null));
-  check_error "Failed to set int" (avro_value_set_int !@field_ptr (Int32.of_int age));
-  check_error "Failed to write into file"  (avro_file_writer_append_value db value_ptr);
+  set_long !@(get_field !@value_ptr 0) 17;
+  set_string !@(get_field !@value_ptr 1) first;
+  set_string !@(get_field !@value_ptr 2) last;
+  set_string !@(get_field !@value_ptr 3) number;
+  set_int !@(get_field !@value_ptr 4) age;
+  write_avro_value db value_ptr;
   print_person !@value_ptr
     
                           
 let main () =
-  let person_schema_ptr = allocate avro_schema_t null in
-  let db_ptr = allocate avro_file_writer_t null in
   let dbname = "quickstop.db" in
-  check_error "Unable to parse person schema"
-        (avro_schema_from_json_literal
-     person_schema_str person_schema_ptr);
-  let person_schema = !@person_schema_ptr in
-  check_error "There was an error creating db"
-        (avro_file_writer_create_with_codec
-     dbname person_schema db_ptr quickstop_codec
-     (Unsigned.Size_t.of_int 0));
-  let number = "123" in 
+  let person_schema_ptr = parse_avro_schema person_schema_str in
+  let db_ptr = avro_file_writer !@person_schema_ptr dbname in
   let db = !@db_ptr in
+  let number = "123" in 
   add_person db !@person_schema_ptr "Dante" "Hicks" number 32;
   add_person db !@person_schema_ptr "Randal" "Graves" "(555) 123-5678" 30;
   add_person db !@person_schema_ptr "Veronica" "Loughran" "(555) 123-0987" 28;
