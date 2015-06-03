@@ -63,12 +63,7 @@ let add_person db person_schema first last number age =
   check_error "Failed to set string" (avro_value_set_long !@field_ptr (Int64.of_int 17));
   set_string (get_field !@value_ptr 1) first;
   set_string (get_field !@value_ptr 1) last;
-  (*check_error "Failed to get field" (avro_value_get_by_index !@value_ptr (Size_t.of_int 1) field_ptr (from_voidp string null));
-  check_error "Failed to set string" (avro_value_set_string !@field_ptr first);*)
-  check_error "Failed to get field" (avro_value_get_by_index !@value_ptr (Size_t.of_int 2) field_ptr (from_voidp string null));
-  check_error "Failed to set string" (avro_value_set_string !@field_ptr last);
-  check_error "Failed to get field" (avro_value_get_by_index !@value_ptr (Size_t.of_int 3) field_ptr (from_voidp string null));
-  check_error "Failed to set string" (avro_value_set_string !@field_ptr number);
+  set_string (get_field !@value_ptr 1) number;
   check_error "Failed to get field" (avro_value_get_by_index !@value_ptr (Size_t.of_int 4) field_ptr (from_voidp string null));
   check_error "Failed to set int" (avro_value_set_int !@field_ptr (Int32.of_int age));
   check_error "Failed to write into file"  (avro_file_writer_append_value db value_ptr);
