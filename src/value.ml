@@ -201,7 +201,7 @@ let avro_value_iface_add =
 
 let avro_value_iface_set_branch =
   field avro_value_iface "set_branch"
-        (funptr (ptr avro_value_iface_t @-> ptr void @-> ptr int @-> ptr avro_value_t @-> returning int))
+        (funptr (ptr avro_value_iface_t @-> ptr void @-> int @-> ptr avro_value_t @-> returning int))
 
 let () = seal avro_value_iface
   
@@ -426,8 +426,10 @@ let avro_value_get_by_index value idx child name =
   get_method value avro_value_iface_get_by_index idx child name
 
 (*#define avro_value_get_by_name(value, name, child, index) \
-    avro_value_call(value, get_by_name, EINVAL, name, child, index)
-#define avro_value_get_discriminant(value, out) \
+    avro_value_call(value, get_by_name, EINVAL, name, child, index)*)
+let avro_value_get_by_name value name child index = 
+  get_method value avro_value_iface_get_by_name name child index
+(*#define avro_value_get_discriminant(value, out) \
     avro_value_call(value, get_discriminant, EINVAL, out)
 #define avro_value_get_current_branch(value, branch) \
     avro_value_call(value, get_current_branch, EINVAL, branch)
@@ -446,6 +448,8 @@ let avro_value_add value key child index is_new =
 (*#define avro_value_set_branch(value, discriminant, branch) \
     avro_value_call(value, set_branch, EINVAL, discriminant, branch)
  *)
+let avro_value_set_branch value discriminant branch =
+  get_method value avro_value_iface_set_branch discriminant branch
        
 
        

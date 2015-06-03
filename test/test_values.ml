@@ -15,7 +15,7 @@ let check_error msg error_no =
       exit 1
     end
 
-let test_boolean test_ctxt = 
+let test_boolean _ = 
     let original = 0 in
     let updated = 0 in
     let boolean_ptr = allocate int 0 in
@@ -31,7 +31,7 @@ let test_boolean test_ctxt =
     assert_equal updated !@boolean_ptr;
     avro_value_decref value_ptr
 
-let test_double test_ctxt = 
+let test_double _ = 
     let original = 10.4 in
     let updated = 3.56 in
     let number_ptr = allocate double 0.0 in
@@ -47,7 +47,7 @@ let test_double test_ctxt =
     assert_equal updated !@number_ptr;
     avro_value_decref value_ptr
 
-let test_float test_ctxt = 
+let test_float _ = 
     let original = 10.4 in
     let updated = 3.56 in
     let number_ptr = allocate float 0.0 in
@@ -63,7 +63,7 @@ let test_float test_ctxt =
     assert_bool "Fail!" (cmp_float (!@number_ptr) updated);
     avro_value_decref value_ptr
 
-let test_int test_ctxt = 
+let test_int _ = 
     let original = Int32.of_int 10 in
     let updated = Int32.of_int 3 in
     let number_ptr = allocate int32_t (Int32.of_int 0) in
@@ -79,7 +79,7 @@ let test_int test_ctxt =
     assert_equal updated !@number_ptr;
     avro_value_decref value_ptr
 
-let test_long test_ctxt = 
+let test_long _ = 
     let original = Int64.of_int 10 in
     let updated = Int64.of_int 3 in
     let number_ptr = allocate int64_t (Int64.of_int 0) in
@@ -95,11 +95,11 @@ let test_long test_ctxt =
     assert_equal updated !@number_ptr;
     avro_value_decref value_ptr
 
-let test_null test_ctxt =
+let test_null _ =
     (*Leaving unimplemented for now need to figure out what to test*)
     assert_equal true true
 
-let test_string test_ctxt = 
+let test_string _ = 
     let original = "This is a test string" in
     let updated = "This is a replacement string" in
     let short_text = "" in
@@ -123,7 +123,7 @@ let test_string test_ctxt =
     assert_equal "This is a " result_str;
     avro_value_decref value_ptr
 
-let test_array test_ctxt = 
+let test_array _ = 
     let double_schema = avro_schema_double () in
     let array_schema = avro_schema_array double_schema in
     let array_class = avro_generic_class_from_schema array_schema in
@@ -143,7 +143,7 @@ let test_array test_ctxt =
     ignore (avro_schema_decref array_schema);
     avro_value_iface_decref array_class
 
-let test_enum test_ctxt = 
+let test_enum _ = 
     let enum_schema_ptr = allocate avro_schema_t null in
     let schema_str = "{" ^
       "\"type\": \"enum\"," ^
@@ -208,6 +208,72 @@ let test_map _ =
     let size_t_ptr = allocate_n size_t ~count:1 in
     avro_value_iface_decref map_class  
 
+let test_record _ =
+    let record_schema_ptr = allocate avro_schema_t null in
+    let schema_str = "{" ^
+    "  \"type\": \"record\"," ^
+    "  \"name\": \"test\"," ^
+    "  \"fields\": [" ^
+    "    { \"name\": \"b\", \"type\": \"boolean\" }," ^
+    "    { \"name\": \"i\", \"type\": \"int\" }," ^
+    "    { \"name\": \"s\", \"type\": \"string\" }," ^
+    "    { \"name\": \"ds\", \"type\": " ^
+    "      { \"type\": \"array\", \"items\": \"double\" } }," ^
+    "    { \"name\": \"sub\", \"type\": " ^
+    "      {" ^
+    "        \"type\": \"record\"," ^
+    "        \"name\": \"subtest\"," ^
+    "        \"fields\": [" ^
+    "          { \"name\": \"f\", \"type\": \"float\" }," ^
+    "          { \"name\": \"l\", \"type\": \"long\" }" ^
+    "        ]" ^
+    "      }" ^
+    "    }," ^
+    "    { \"name\": \"nested\", \"type\": [\"null\", \"test\"] }" ^
+    "  ]" ^
+    "}"; in
+    check_error "Failed to read avro schema" (avro_schema_from_json_literal schema_str record_schema_ptr);
+    let record_class = avro_generic_class_from_schema !@record_schema_ptr in 
+    let value_ptr = allocate_n avro_value ~count:1 in
+    check_error "Failed to create fixed" (avro_generic_value_new record_class value_ptr);
+    let size_t_ptr = allocate_n size_t ~count:1 in
+    check_error "Failed to get size of record" (avro_value_get_size !@value_ptr size_t_ptr);
+    assert_equal 6 (Size_t.to_int !@size_t_ptr);
+    let field_ptr = allocate_n avro_value ~count:1 in
+    let element_ptr = allocate_n avro_value ~count:1 in
+    let subfield_ptr = allocate_n avro_value ~count:1 in
+    let branch_ptr = allocate_n avro_value ~count:1 in
+    let field_name_ptr = allocate_n string ~count:1 in 
+    let field_index_ptr = allocate_n size_t ~count:1 in 
+    check_error "Failed to get field" (avro_value_get_by_index !@value_ptr (Size_t.of_int 0) field_ptr (from_voidp string null));
+    check_error "Failed to set boolean" (avro_value_set_boolean !@field_ptr 1);
+    check_error "Failed to get field" (avro_value_get_by_index !@value_ptr (Size_t.of_int 1) field_ptr field_name_ptr);
+    check_error "Failed to set boolean" (avro_value_set_int !@field_ptr (Int32.of_int 42));
+    assert_equal "i" !@field_name_ptr;
+    check_error "Failed to get field"  (avro_value_get_by_index !@value_ptr (Size_t.of_int 2) field_ptr (from_voidp string null));
+    check_error "Failed to set string" (avro_value_set_string !@field_ptr "hello");
+    check_error "Failed to get field"  (avro_value_get_by_name !@value_ptr "i" field_ptr field_index_ptr);
+    assert_equal 1 (Size_t.to_int !@field_index_ptr);
+
+    check_error "Failed to get field" (avro_value_get_by_index !@value_ptr (Size_t.of_int 3) field_ptr (from_voidp string null));
+    check_error "Failed to add element" (avro_value_append !@field_ptr element_ptr (from_voidp size_t null)); 
+    check_error "Failed to set double"  (avro_value_set_double !@element_ptr 10.0);
+
+    check_error "Failed to get field" (avro_value_get_by_index !@value_ptr (Size_t.of_int 4) field_ptr (from_voidp string null));
+    check_error "Failed to get field" (avro_value_get_by_index !@field_ptr (Size_t.of_int 0) subfield_ptr (from_voidp string null));
+    check_error "Failed to set float"  (avro_value_set_float !@subfield_ptr 5.0);
+
+    check_error "Failed to set float"  (avro_value_get_by_index !@field_ptr (Size_t.of_int 1) subfield_ptr (from_voidp string null));
+    check_error "Failed to set float"  (avro_value_set_long !@subfield_ptr (Int64.of_int 10000));
+
+
+    check_error "Failed to set field"  (avro_value_get_by_index !@value_ptr (Size_t.of_int 5) field_ptr (from_voidp string null));
+    check_error "Cannot select null branch" (avro_value_set_branch !@field_ptr 0 branch_ptr);
+
+    avro_value_decref value_ptr;
+    avro_value_iface_decref record_class;
+    ignore (avro_schema_decref !@record_schema_ptr)
+
 
 let suit = "First Test" >:::
 [
@@ -220,7 +286,8 @@ let suit = "First Test" >:::
   "test_array" >:: test_array;
   "test_enum" >:: test_enum;
   "test_fixed" >:: test_fixed;
-  "test_map" >:: test_map
+  "test_map" >:: test_map;
+  "test_record" >:: test_record
 ]
 
 let _ = run_test_tt_main suit
