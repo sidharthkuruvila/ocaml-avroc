@@ -274,6 +274,46 @@ let test_record _ =
     avro_value_iface_decref record_class;
     ignore (avro_schema_decref !@record_schema_ptr)
 
+let test_union _ =
+    let union_schema_ptr = allocate avro_schema_t null in
+    let schema_str = "[" ^
+    "  \"null\"," ^
+    "  \"int\"," ^
+    "  \"double\"," ^
+    "  \"bytes\"" ^
+    "]" in
+    check_error "Failed to read avro schema" (avro_schema_from_json_literal schema_str union_schema_ptr);
+    let union_class = avro_generic_class_from_schema !@union_schema_ptr in 
+    let value_ptr = allocate_n avro_value ~count:1 in
+    let discriminant_ptr = allocate_n int ~count:1 in
+    check_error "Failed to create union" (avro_generic_value_new union_class value_ptr);
+    check_error "Failed to get discriminant" (avro_value_get_discriminant !@value_ptr discriminant_ptr);
+    assert_equal (-1) !@discriminant_ptr;
+    let branch_ptr = allocate_n avro_value ~count:1 in
+    assert_equal 0 (avro_value_get_current_branch !@value_ptr branch_ptr);
+    check_error "Failed to get discriminant" (avro_value_set_branch !@value_ptr 0 branch_ptr);
+    check_error "Failed to set branch" (avro_value_set_null !@branch_ptr);
+    
+    check_error "Failed to get discriminant" (avro_value_set_branch !@value_ptr 1 branch_ptr);
+    check_error "Failed to set int"  (avro_value_set_int !@branch_ptr (Int32.of_int 10000));
+
+    check_error "Failed to get discriminant" (avro_value_set_branch !@value_ptr 1 branch_ptr);
+    check_error "Failed to set int"  (avro_value_set_int !@branch_ptr (Int32.of_int 10));
+
+    check_error "Failed to get discriminant" (avro_value_set_branch !@value_ptr 2 branch_ptr);
+    check_error "Failed to set double"  (avro_value_set_double !@branch_ptr 10.0);
+
+    let bytes = allocate_n char ~count:4 in
+    (bytes +@ 0) <-@ 'a';
+    (bytes +@ 1) <-@ 'b';
+    (bytes +@ 2) <-@ 'c';
+    (bytes +@ 3) <-@ 'd';
+    check_error "Failed to set branch" (avro_value_set_branch !@value_ptr 3 branch_ptr);
+    check_error "Failed to set bytes"  (avro_value_set_bytes !@branch_ptr (to_voidp bytes) (Size_t.of_int 4));
+    ignore (avro_value_decref value_ptr);
+    ignore (avro_schema_decref !@union_schema_ptr);
+    ignore (avro_value_iface_decref union_class)
+
 
 let suit = "First Test" >:::
 [

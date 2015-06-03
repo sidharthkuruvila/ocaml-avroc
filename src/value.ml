@@ -353,8 +353,10 @@ let avro_value_set_boolean value out =
   get_method value avro_value_iface_set_boolean out
 (*
 #define avro_value_set_bytes(value, buf, size) \
-    avro_value_call(value, set_bytes, EINVAL, buf, size)
-#define avro_value_give_bytes(value, buf) \
+    avro_value_call(value, set_bytes, EINVAL, buf, size)*)
+let avro_value_set_bytes value buf size =
+  get_method value avro_value_iface_set_bytes buf size
+(*#define avro_value_give_bytes(value, buf) \
     avro_value_call(value, give_bytes, EINVAL, buf)
 *)
 
@@ -386,6 +388,8 @@ let avro_value_set_long value out =
 #define avro_value_set_null(value) \
     avro_value_call0(value, set_null, EINVAL)
 *)
+let avro_value_set_null value = 
+  get_method value avro_value_iface_set_null
 (*#define avro_value_set_string(value, str) \
     avro_value_call(value, set_string, EINVAL, str)*)
 let avro_value_set_string value out =
@@ -430,10 +434,16 @@ let avro_value_get_by_index value idx child name =
 let avro_value_get_by_name value name child index = 
   get_method value avro_value_iface_get_by_name name child index
 (*#define avro_value_get_discriminant(value, out) \
-    avro_value_call(value, get_discriminant, EINVAL, out)
-#define avro_value_get_current_branch(value, branch) \
+    avro_value_call(value, get_discriminant, EINVAL, out) *)
+let avro_value_get_discriminant value out =
+  get_method value avro_value_iface_get_discriminant out
+ 
+(*#define avro_value_get_current_branch(value, branch) \
     avro_value_call(value, get_current_branch, EINVAL, branch)
 *)
+let avro_value_get_current_branch value branch =
+  get_method value avro_value_iface_get_current_branch branch
+
 (*#define avro_value_append(value, child, new_index) \
     avro_value_call(value, append, EINVAL, child, new_index)*)
 let avro_value_append value child new_index =
