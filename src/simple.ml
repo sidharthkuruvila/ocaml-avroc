@@ -5,7 +5,6 @@ open Errors
 open Generic
 open Value
 open Unsigned
-open Core
 
 let check_error msg error_no =
   if error_no != 0 then begin

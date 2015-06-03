@@ -5,7 +5,6 @@ open Errors
 open Generic
 open Value
 open Unsigned
-open Core
 open Simple
 
 
@@ -30,12 +29,12 @@ let print_person person =
   let size_t_ptr = allocate_n size_t ~count:1 in
   check_error "Failed to get field" (avro_value_get_by_index person (Size_t.of_int 0) field_ptr (from_voidp string null));
   check_error "Failed to set string" (avro_value_get_long !@field_ptr long_ptr);
-  Core.Std.printf "Id = %d, " (Int64.to_int !@long_ptr);
+  Format.printf "Id = %d, " (Int64.to_int !@long_ptr);
   check_error "Failed to get field" (avro_value_get_by_index person (Size_t.of_int 1) field_ptr (from_voidp string null));
   check_error "Failed to set string" (avro_value_get_string !@field_ptr byte_ptr_ptr size_t_ptr);
   let first = (string_from_ptr !@byte_ptr_ptr (Size_t.to_int !@size_t_ptr)) in
-  Core.Std.printf "First name = %s, " first;
-  Core.Std.printf "\n"
+  Format.printf "First name = %s, " first;
+  Format.printf "\n"
 
 let add_person db person_schema first last number age =
   let record_class = avro_generic_class_from_schema person_schema in 
