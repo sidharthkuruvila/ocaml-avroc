@@ -1,0 +1,4 @@
+true: package(ctypes.foreign), package(ounit)
+<src> : include
+<test> : include
+<examples> : include
