@@ -24,9 +24,9 @@ Install ocam dependencies
 
 ### Running tests
 
-    ./test.sh
+    make test_values
 
-### Building quickstop example
+### Running the quickstop example
 
-    ./build.sh
-    ./quickstop.native
+    
+    make quickstop

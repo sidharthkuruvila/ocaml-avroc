@@ -1,6 +1,9 @@
 all:
 
-quickstop: 
+quickstop: quickstop.native
+	./quickstop.native
+
+quickstop.native: 
 	ocamlbuild quickstop.native
 
 avroc: avroc.cma avroc.cmxa
