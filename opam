@@ -1,0 +1,19 @@
+opam-version: "1.2"
+name: "avroc"
+version: "0.0.1"
+maintainer: "Sidharth Kuruvila <sidharth.kuruvila@gmail.com>"
+authors: "Sidharth Kuruvila <sidharth.kuruvila@gmail.com>"
+homepage: "http://github.com/sidharthkuruvila/ocaml-avroc"
+dev-repo: "http://github.com/sidharthkuruvila/ocaml-avroc.git"
+bug-reports: "http://github.com/sidharthkuruvila/ocaml-avroc/issues"
+license: "MIT"
+build: [
+  [make avroc]
+]
+install: [make "install"]
+remove: ["ocamlfind" "remove" "avroc"]
+depends: [
+  "ocamlfind" {build}
+  "ctypes" 
+]
+description: "Read and write Avro files"
