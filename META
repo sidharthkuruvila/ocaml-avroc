@@ -1,0 +1,8 @@
+version = "0.0.1"
+description = "Wrapper over avroc"
+requires = "ctypes.foreign"
+archive(byte) = "avroc.cma"
+archive(byte, plugin) = "avroc.cma"
+archive(native) = "avroc.cmxa"
+archive(native, plugin) = "avroc.cmxs"
+exists_if = "avroc.cma"

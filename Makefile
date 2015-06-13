@@ -23,9 +23,12 @@ test_%: test_%.native
 test_%.native:
 	ocamlbuild $@
 
-install: avroc.cma avroc.cxma
+install: avroc
+	./install.sh
 
+uninstall:
+	ocamlfind remove avroc
 
-.PHONEY: clean quickstop avroc
+.PHONEY: clean quickstop avroc install
 clean:
 	ocamlbuild -clean
