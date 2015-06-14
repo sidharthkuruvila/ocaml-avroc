@@ -16,4 +16,3 @@ depends: [
   "ocamlfind" {build}
   "ctypes" 
 ]
-description: "Read and write Avro files"
