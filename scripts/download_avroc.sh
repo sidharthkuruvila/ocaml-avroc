@@ -1,3 +1,5 @@
+#!/bin/bash
+
 function checkfile(){
     md5 $1 | grep $CHECKSUM
     if [ $? -ne 0 ]; then
