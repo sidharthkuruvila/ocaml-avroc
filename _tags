@@ -1,5 +1,6 @@
-true: package(ctypes.foreign), package(ounit)
+true: package(ctypes.foreign)
 <src> : include
 <test> : include
 <examples> : include
 <avro-c-dir>: -traverse
+<test/*> : package(ounit)
