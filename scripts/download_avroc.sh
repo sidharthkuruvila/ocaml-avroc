@@ -1,7 +1,21 @@
 #!/bin/bash
 
+function trycommand(){
+    command -v $1
+    if [ $? -eq 0 ]; then
+        COMMAND=$1
+    fi
+}
+
+
 function checkfile(){
-    md5 $1 | grep $CHECKSUM
+    #select md5 command
+    unset COMMAND
+    trycommand md5
+    trycommand md5sum
+
+    $COMMAND $1 | grep $CHECKSUM
+
     if [ $? -ne 0 ]; then
         echo "Failed to download avro, checksum didn't match"
         rm $1
