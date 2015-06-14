@@ -2,3 +2,4 @@ true: package(ctypes.foreign), package(ounit)
 <src> : include
 <test> : include
 <examples> : include
+<avro-c-dir>: -traverse

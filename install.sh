@@ -1,1 +1,1 @@
-ocamlfind install avroc META _build/avroc.cma _build/avroc.cmxa _build/avroc.cmxs _build/avroc.a  _build/src/*.cmi
+ocamlfind install avroc META _build/avroc.cma _build/avroc.cmxa _build/avroc.cmxs _build/avroc.a  _build/src/*.cmi _build/libavro*
