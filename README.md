@@ -20,6 +20,7 @@ Install ocam dependencies
 
     opam install ctypes
     opam install ounit
+    opam install ctypes-foreign
 
 
 ### Running tests
