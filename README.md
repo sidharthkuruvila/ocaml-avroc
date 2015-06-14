@@ -10,13 +10,8 @@ Building
 
 ###Add dependencies
 
-These currently only work on osx
 
-Install avroc
-  
-    brew install avroc
-
-Install ocam dependencies
+Install ocaml dependencies
 
     opam install ctypes
     opam install ounit
@@ -29,5 +24,4 @@ Install ocam dependencies
 
 ### Running the quickstop example
 
-    
     make quickstop
